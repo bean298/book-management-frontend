@@ -150,7 +150,7 @@ export default function Header() {
           <Avatar sx={{ width: 30, height: 30, fontSize: 13 }}>A</Avatar>
         ) : (
           <IconButton aria-label="Sign in" color="inherit">
-            <Tooltip title="Shopping cart" arrow>
+            <Tooltip title="User" arrow>
               <AccountCircleOutlinedIcon />
             </Tooltip>
           </IconButton>
