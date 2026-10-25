@@ -9,14 +9,13 @@ import {
   IconButton,
   Avatar,
 } from "@mui/material";
-import { Link as RouterLink, NavLink } from "react-router";
+import { Link as RouterLink, NavLink, useNavigate } from "react-router";
 import Tooltip from "@mui/material/Tooltip";
 import { useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 
 const navigationItems = [
   { label: "Home", to: "/", end: true },
@@ -25,7 +24,12 @@ const navigationItems = [
 ];
 
 export default function Header() {
+  // State
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+
+  // Local storage
+  const isLoggedIn = Boolean(localStorage.getItem("access_token"));
 
   return (
     // AppBar: Header
@@ -146,14 +150,22 @@ export default function Header() {
         </Tooltip>
 
         {/* Avatar */}
-        {localStorage.getItem("access_token") ? (
+        {isLoggedIn ? (
           <Avatar sx={{ width: 30, height: 30, fontSize: 13 }}>A</Avatar>
         ) : (
-          <IconButton aria-label="Sign in" color="inherit">
-            <Tooltip title="User" arrow>
-              <AccountCircleOutlinedIcon />
-            </Tooltip>
-          </IconButton>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => navigate("/login")}
+            sx={{
+              textTransform: "none",
+              borderRadius: 2,
+              px: 2,
+              boxShadow: "none",
+            }}
+          >
+            Sign in
+          </Button>
         )}
       </Toolbar>
     </AppBar>
