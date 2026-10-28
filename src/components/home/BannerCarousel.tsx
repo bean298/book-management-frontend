@@ -1,9 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import { Carousel } from "antd";
 import { Link as RouterLink } from "react-router";
-import carousel1 from "../assets/carousel/carousel1.jpg";
-import carousel2 from "../assets/carousel/carousel2.jpg";
-import carousel3 from "../assets/carousel/carousel3.jpg";
+import carousel1 from "../../assets/carousel/carousel1.jpg";
+import carousel2 from "../../assets/carousel/carousel2.jpg";
+import carousel3 from "../../assets/carousel/carousel3.jpg";
 
 const slides = [
   { src: carousel1, alt: "Banner 1" },
