@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import type { Swiper as SwiperClass } from "swiper";
 import {
   Alert,
@@ -7,45 +7,25 @@ import {
   IconButton,
   Skeleton,
   Typography,
-  Card,
-  CardContent,
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import type { Category } from "../types/category";
-import { getCategories } from "../services/categoryService";
 import { Swiper, SwiperSlide } from "swiper/react";
+import CategoryCard from "../pages/home/CategoryCard";
 import "swiper/css";
 
-export default function CategorySection() {
-  // State
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+interface CategorySectionProps {
+  categories: Category[];
+  loading?: boolean;
+  error?: string;
+}
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    // Get categories data
-    getCategories(controller.signal)
-      .then(setCategories)
-      .catch((loadError: unknown) => {
-        if (!controller.signal.aborted) {
-          setError(
-            loadError instanceof Error
-              ? loadError.message
-              : "Can't load categories.",
-          );
-        }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-
-    // Cancel request
-    return () => controller.abort();
-  }, []);
-
+export default function CategorySection({
+  categories, //Category data
+  loading = false,
+  error = "",
+}: CategorySectionProps) {
   // Reference to object control of Swiper
   const swiperRef = useRef<SwiperClass | null>(null);
 
@@ -167,127 +147,49 @@ export default function CategorySection() {
         {error ? (
           // Error
           <Alert severity="error">{error}</Alert>
+        ) : loading ? (
+          // Loading
+          <Box sx={{ display: "flex", gap: 3 }}>
+            {Array.from({ length: 3 }, (_, index) => (
+              <Skeleton
+                key={index}
+                variant="rounded"
+                sx={{
+                  flex: {
+                    xs: "0 0 100%",
+                    sm: "0 0 calc(50% - 12px)",
+                    md: "0 0 calc(33.333% - 16px)",
+                  },
+                  height: 184,
+                  borderRadius: 3,
+                }}
+              />
+            ))}
+          </Box>
+        ) : categories.length === 0 ? (
+          <Typography color="text.secondary" sx={{ py: 4 }}>
+            No categories available yet.
+          </Typography>
         ) : (
-          <Box
-            sx={{
-              display: "flex",
-              gap: 3,
-              overflowX: "auto",
-              py: 2, //Padding top,bottom
-              my: -2, //Margin top,bottom
-              scrollBehavior: "smooth",
-              scrollSnapType: "x mandatory",
-              scrollbarWidth: "none", //Hide scrollbar
-              "&::-webkit-scrollbar": { display: "none" },
+          // Category
+          <Swiper
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+            }}
+            spaceBetween={24}
+            slidesPerView={1}
+            breakpoints={{
+              600: { slidesPerView: 2 },
+              900: { slidesPerView: 3 },
             }}
           >
-            {loading ? (
-              // Skeleton for loading
-              <Box sx={{ display: "flex", gap: 3 }}>
-                {Array.from({ length: 3 }, (_, index) => (
-                  <Skeleton
-                    key={index}
-                    variant="rounded"
-                    sx={{
-                      flex: {
-                        xs: "0 0 100%",
-                        sm: "0 0 calc(50% - 12px)",
-                        md: "0 0 calc(33.333% - 16px)",
-                      },
-                      height: 184,
-                      borderRadius: 3,
-                    }}
-                  />
-                ))}
-              </Box>
-            ) : (
-              // Card category
-              <Swiper
-                onSwiper={(swiper) => {
-                  swiperRef.current = swiper;
-                }}
-                spaceBetween={24}
-                slidesPerView={1}
-                breakpoints={{
-                  600: { slidesPerView: 2 },
-                  900: { slidesPerView: 3 },
-                }}
-              >
-                {categories.map((category) => (
-                  <SwiperSlide key={category.id}>
-                    <Box sx={{ pb: 1 }}>
-                      <Card
-                        component="article"
-                        sx={{
-                          height: "100%",
-                          minHeight: 220,
-                          boxSizing: "border-box",
-                          display: "flex",
-                          flexDirection: "column",
-                          borderRadius: 3,
-                          border: "1px solid rgba(39, 50, 68, 0.07)",
-                          background:
-                            "linear-gradient(145deg, #fff 0%, #fff8f4 100%)",
-                          boxShadow: "0 4px 14px rgba(39, 50, 68, 0.035)",
-                          // Line on card
-                          "&::before": {
-                            content: '""',
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            height: 4,
-                            bgcolor: "#b9785b",
-                            transform: "scaleX(0.18)",
-                            transformOrigin: "left",
-                            transition: "transform 220ms ease",
-                          },
-                          "&:hover": {
-                            cursor: "pointer",
-                            transform: "translateY(-1px)",
-                            borderColor: "#b9785b",
-                            boxShadow: "0 18px 36px rgba(39, 50, 68, 0.12)",
-
-                            "&::before": {
-                              transform: "scaleX(1)",
-                            },
-
-                            "& h3": {
-                              color: "#b9785b",
-                            },
-                          },
-                          //Padding
-                          p: { xs: 3, md: 3.5 },
-                        }}
-                      >
-                        <CardContent>
-                          <Typography
-                            component="h3"
-                            sx={{
-                              fontSize: 22,
-                              fontWeight: 700,
-                              letterSpacing: "-0.02em",
-                              transition: "color 220ms ease",
-                            }}
-                          >
-                            {category.name}
-                          </Typography>
-
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mt: 2, lineHeight: 1.7 }}
-                          >
-                            {category.description}
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Box>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            )}
-          </Box>
+            {categories.map((category) => (
+              <SwiperSlide key={category.id}>
+                {/* Category Card */}
+                <CategoryCard category={category} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         )}
       </Container>
     </Box>

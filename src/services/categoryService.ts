@@ -1,24 +1,28 @@
 import type { Category, CategoryResponse } from "../types/category";
+import { apiRequest } from "./apiClient";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+interface GetCategoriesParams {
+  page?: number;
+  pageSize?: number;
+  signal?: AbortSignal; // Allows cancelling the request
+}
 
-export async function getCategories(
-  signal?: AbortSignal, // Allows cancelling the request
-): Promise<Category[]> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/category?page=1&page_size=10`,
+// Get categories
+export async function getCategories({
+  page = 1,
+  pageSize = 10,
+  signal,
+}: GetCategoriesParams = {}): Promise<Category[]> {
+  // URL Params
+  const query = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+  });
+
+  const data = await apiRequest<CategoryResponse["data"]>(
+    `/api/v1/category?${query}`,
     { signal },
   );
 
-  if (!response.ok) {
-    throw new Error("Can't load categories.");
-  }
-
-  const result: CategoryResponse = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message || "Can't load categories.");
-  }
-
-  return result.data.items;
+  return data.items;
 }
