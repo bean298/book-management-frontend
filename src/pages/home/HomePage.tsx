@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
-import BannerCarousel from "../../components/BannerCarousel";
-import CategorySection from "../../components/CategorySection";
+import BannerCarousel from "../../components/home/BannerCarousel";
+import CategorySection from "../../components/home/CategorySection";
 import { useCategories } from "../../hooks/useCategories";
 
 export default function HomePage() {

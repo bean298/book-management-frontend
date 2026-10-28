@@ -10,9 +10,9 @@ import {
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import type { Category } from "../types/category";
+import type { Category } from "../../types/category";
 import { Swiper, SwiperSlide } from "swiper/react";
-import CategoryCard from "../pages/home/CategoryCard";
+import CategoryCard from "./CategoryCard";
 import "swiper/css";
 
 interface CategorySectionProps {
